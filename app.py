@@ -9,6 +9,25 @@ CORS(app, resources={r"/*": {"origins": "https://chat.openai.com"}})
 def getTodos():
     return Response(response=json.dumps({"item": "pick jacket"}), status=200)
 
+@app.route("/get_investor_cik", methods=["POST"])
+def get_investor_cik():
+    data = request.get_json()
+    print(data, "get_investor_cik")
+    return Response(response=json.dumps({"results": "12345"}), status=200)
+
+@app.route("/get_issuer_cusip", methods=["POST"])
+def get_issuer_cusip():
+    data = request.get_json()
+    print(data, "get_issuer_cusip")
+    return Response(response=json.dumps({"results": "54321"}), status=200)
+
+@app.route("/get_filings", methods=["POST"])
+def get_filings():
+    data = request.get_json()
+    print(data, "get_filings")
+    return Response(response=json.dumps({"results": [1, 2, 3, 4, 5]}), status=200)
+
+
 @app.route("/logo.png", methods=["GET"])
 def plugin_logo():
     filename = 'logo.png'

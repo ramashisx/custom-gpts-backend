@@ -17,6 +17,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/getTodosResponse'
+  /get_investor_cik:
+    post:
+      operationId: get_investor_cik
+      summary: Get the CIK of a Investor from it's name
+      description: Something
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetInvestorCikRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInvestorCikResponse'
+  /get_issuer_cusip:
+    post:
+      operationId: get_issuer_cusip
+      summary: Get the cusip of a particular stock/asset from it's name
+      description: something
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetIssuerCusipRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetIssuerCusipResponse'
+  /get_filings:
+    post:
+      operationId: get_filings
+      summary: Query of a database to get records on a Db having 13F documents
+      description: 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetFilingsRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFilingsResponse'
 components:
   schemas:
     getTodosResponse:
@@ -27,3 +81,76 @@ components:
           items:
             type: string
           description: The list of todos.
+    GetInvestorCikRequest:
+      title: GetInvestorCikRequest
+      required:
+        - investor_name
+      type: object
+      properties:
+        investor_name:
+          title: InvestorName
+          type: string
+          description: The Name of investor we want to know CIK.
+    GetIssuerCusipRequest:
+      title: GetIssuerCusipRequest
+      required:
+        - issuer_name
+      type: object
+      properties:
+        issuer_name:
+          title: IssuerName
+          type: string
+          description: The Name of issuer/asset we want to know cusip.
+    GetFilingsRequest:
+      title: GetFilingsRequest
+      required:
+        - db_query
+      type: object
+      properties:
+        db_query:
+          title: Database Query
+          type: string
+          description: The Query that has to be ran on Db.
+    GetInvestorCikResponse:
+      title: GetInvestorCikResponse
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: string
+          description: CIK of the investor
+    GetIssuerCusipResponse:
+      title: GetIssuerCusipResponse
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: string
+          description: cusip of the asset/issuer
+    GetFilingsResponse:
+      title: GetFilingsResponse
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: array
+          description: list of values from the database
+          items:
+            $ref: "#/components/schemas/FilingResult"
+    FilingResult:
+      title: FilingResult
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: array
+          items:
+            type: string
