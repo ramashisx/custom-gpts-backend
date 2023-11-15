@@ -4,7 +4,7 @@ info:
   description: A plugin that allows the user to create and manage a TODO list using ChatGPT.
   version: 'v1'
 servers:
-  - url: https://54.234.76.173
+  - url: https://greasy-jessika-digital-alpha.koyeb.app/
 paths:
   /todos:
     get:

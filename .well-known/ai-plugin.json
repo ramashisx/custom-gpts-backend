@@ -9,9 +9,9 @@
     },
     "api": {
       "type": "openapi",
-      "url": "https://54.234.76.173/openapi.yaml"
+      "url": "https://greasy-jessika-digital-alpha.koyeb.app/openapi.yaml"
     },
-    "logo_url": "https://54.234.76.173/logo.png",
+    "logo_url": "https://greasy-jessika-digital-alpha.koyeb.app/logo.png",
     "contact_email": "legal@example.com",
     "legal_info_url": "http://example.com/legal"
   }
