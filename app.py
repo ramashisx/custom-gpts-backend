@@ -24,6 +24,8 @@ def get_filings():
     return Response(response=json.dumps({"results": [1, 2, 3, 4, 5]}), status=200)
 
 
+
+# no changes below
 @app.route("/logo.png", methods=["GET"])
 def plugin_logo():
     filename = 'logo.png'
