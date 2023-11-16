@@ -5,6 +5,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://chat.openai.com"}})
 
+
 @app.route("/get_investor_cik", methods=["POST"])
 def get_investor_cik():
     data = request.get_json()
