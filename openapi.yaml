@@ -38,7 +38,7 @@ paths:
   /get_issuer_cusip:
     post:
       operationId: get_issuer_cusip
-      summary: Get the cusip of a particular stock/asset from it's name
+      summary: Get the cusip of a particular asset/issuer from it's name
       description: something
       requestBody:
         content:
