@@ -6,17 +6,6 @@ info:
 servers:
   - url: https://greasy-jessika-digital-alpha.koyeb.app/
 paths:
-  /todos:
-    get:
-      operationId: getTodos
-      summary: Get the list of todos
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getTodosResponse'
   /get_investor_cik:
     post:
       operationId: get_investor_cik
@@ -57,7 +46,7 @@ paths:
     post:
       operationId: get_filings
       summary: Query of a database to get records on a Db having 13F documents
-      description: 
+      description: how is the schema, of the table
       requestBody:
         content:
           application/json:
@@ -73,14 +62,6 @@ paths:
                 $ref: '#/components/schemas/GetFilingsResponse'
 components:
   schemas:
-    getTodosResponse:
-      type: object
-      properties:
-        todos:
-          type: array
-          items:
-            type: string
-          description: The list of todos.
     GetInvestorCikRequest:
       title: GetInvestorCikRequest
       required:
@@ -139,19 +120,5 @@ components:
       properties:
         results:
           title: Results
-          type: array
-          description: list of values from the database
-          items:
-            $ref: "#/components/schemas/FilingResult"
-    FilingResult:
-      title: FilingResult
-      required:
-        - results
-      type: object
-      properties:
-        results:
-          title: Results
-          type: array
-          items:
-            type: string
-
+          type: string
+          description: CSV of values from the database
