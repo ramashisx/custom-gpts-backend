@@ -1,29 +1,61 @@
 import json
 from flask import Flask, request, send_file, Response
 from flask_cors import CORS
+import psycopg2
+import pandas as pd
+import os
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://chat.openai.com"}})
 
+POSTGRES_URL = os.environ.get("POSTGRES_HOST")
+POSTGRES_PORT = os.environ.get("POSTGRES_PORT")
+POSTGRES_DB =  os.environ.get("POSTGRES_DB")
+POSTGRES_USER = os.environ.get("POSTGRES_USER")
+POSTGRES_PW = os.environ.get("POSTGRES_PASSWORD")
+
+conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
+cur = conn.cursor()
 
 @app.route("/get_investor_cik", methods=["POST"])
 def get_investor_cik():
     data = request.get_json()
     print(data, "get_investor_cik")
-    return Response(response=json.dumps({"results": "12345"}), status=200)
+    investor_name = data["investor_name"]
+    query = "SELECT cik FROM all_investors WHERE investor_name ~ %s"
+    cur.execute(query, (f".*{investor_name}.*",))
+    results = cur.fetchall()
+    if len(results) == 0:
+        return Response(response=json.dumps({"results": "CIK NOT FOUND"}), status=300)
+
+    return Response(response=json.dumps({"results": results[0][0]}), status=200)
 
 @app.route("/get_issuer_cusip", methods=["POST"])
 def get_issuer_cusip():
     data = request.get_json()
     print(data, "get_issuer_cusip")
-    return Response(response=json.dumps({"results": "54321"}), status=200)
+    issuer_name = data["issuer_name"]
+    query = "SELECT cusip FROM asset_cusip_lookup WHERE nameofissuer ~ %s"
+    cur.execute(query, (f".*{issuer_name}.*",))
+    results = cur.fetchall()
+    if len(results) == 0:
+        return Response(response=json.dumps({"results": "CUSIP NOT FOUND"}), status=300)
+    
+    return Response(response=json.dumps({"results": results[0][0]}), status=200) # SHOWING THE FIRST RESULT ONLY
 
 @app.route("/get_filings", methods=["POST"])
 def get_filings():
     data = request.get_json()
     print(data, "get_filings")
-    return Response(response=json.dumps({"results": [1, 2, 3, 4, 5]}), status=200)
-
+    db_query = data["db_query"]
+    # cur.execute("ROLLBACK") # ROLLBACK TO PREVIOUS TRANSACTION
+    cur.execute(db_query)
+    results = cur.fetchall()
+    if len(results) == 0:
+        return Response(response=json.dumps({"results": "NO RESULTS FOUND"}), status=300)
+    
+    csv_string = pd.DataFrame(results).to_csv(index=False, header=None)
+    return Response(response=json.dumps({"results": csv_string}), status=200)
 
 
 # no changes below

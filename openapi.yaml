@@ -24,6 +24,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetInvestorCikResponse'
+      responses:
+        "300":
+          description: CIK NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInvestorCikResponseIfNull'
   /get_issuer_cusip:
     post:
       operationId: get_issuer_cusip
@@ -42,6 +49,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetIssuerCusipResponse'
+      responses:
+        "300":
+          description: CUSIP NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetIssuerCusipResponseIfNull'
   /get_filings:
     post:
       operationId: get_filings
@@ -60,6 +74,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetFilingsResponse'
+      responses:
+        "300":
+          description: QUERY NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFilingsResponseIfNull'
 components:
   schemas:
     GetInvestorCikRequest:
@@ -102,6 +123,16 @@ components:
           title: Results
           type: string
           description: CIK of the investor
+    GetInvestorCikResponseIfNull:
+      title: GetInvestorCikResponseIfNull
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: string
+          description: If the specified investor is not found
     GetIssuerCusipResponse:
       title: GetIssuerCusipResponse
       required:
@@ -112,6 +143,16 @@ components:
           title: Results
           type: string
           description: cusip of the asset/issuer
+    GetIssuerCusipResponseIfNull:
+      title: GetIssuerCusipResponseIfNull
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: string
+          description: If the specified asset/issuer is not found
     GetFilingsResponse:
       title: GetFilingsResponse
       required:
@@ -122,3 +163,13 @@ components:
           title: Results
           type: string
           description: CSV of values from the database
+    GetFilingsResponseIfNull:
+      title: GetFilingsResponseIfNull
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: string
+          description: If the specified query is not found
