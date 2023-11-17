@@ -19,12 +19,19 @@ cur = conn.cursor()
 
 @app.route("/get_investor_cik", methods=["POST"])
 def get_investor_cik():
+    results = []
     data = request.get_json()
     print(data, "get_investor_cik")
     investor_name = data["investor_name"]
     query = "SELECT cik FROM all_investors WHERE investor_name ~ %s"
-    cur.execute(query, (f".*{investor_name}.*",))
-    results = cur.fetchall()
+    try:
+        cur.execute(query, (f".*{investor_name}.*",))
+        results = cur.fetchall()
+    except Exception as e:
+        print(e)
+        cur.execute("ROLLBACK") # ROLLBACK TO PREVIOUS TRANSACTION
+        return Response(response=json.dumps({"results": "QUERY FAILED due to {e}"}), status=300)
+
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CIK NOT FOUND"}), status=300)
 
@@ -32,12 +39,19 @@ def get_investor_cik():
 
 @app.route("/get_issuer_cusip", methods=["POST"])
 def get_issuer_cusip():
+    results = []
     data = request.get_json()
     print(data, "get_issuer_cusip")
     issuer_name = data["issuer_name"]
     query = "SELECT cusip FROM asset_cusip_lookup WHERE nameofissuer ~ %s"
-    cur.execute(query, (f".*{issuer_name}.*",))
-    results = cur.fetchall()
+    try:
+        cur.execute(query, (f".*{issuer_name}.*",))
+        results = cur.fetchall()
+    except Exception as e:
+        print(e)
+        cur.execute("ROLLBACK")
+        return Response(response=json.dumps({"results": "QUERY FAILED due to {e}"}), status=300)
+
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CUSIP NOT FOUND"}), status=300)
     
@@ -45,12 +59,18 @@ def get_issuer_cusip():
 
 @app.route("/get_filings", methods=["POST"])
 def get_filings():
+    results = []
     data = request.get_json()
     print(data, "get_filings")
     db_query = data["db_query"]
-    # cur.execute("ROLLBACK") # ROLLBACK TO PREVIOUS TRANSACTION
-    cur.execute(db_query)
-    results = cur.fetchall()
+    try:
+        cur.execute(db_query)
+        results = cur.fetchall()
+    except Exception as e:
+        print(e)
+        cur.execute("ROLLBACK")
+        return Response(response=json.dumps({"results": "QUERY FAILED due to {e}"}), status=300)
+
     if len(results) == 0:
         return Response(response=json.dumps({"results": "NO RESULTS FOUND"}), status=300)
     
