@@ -57,6 +57,26 @@ def get_issuer_cusip():
     
     return Response(response=json.dumps({"results": results[0][0]}), status=200) # SHOWING THE FIRST RESULT ONLY
 
+@app.route("/get_investor_name", methods=["POST"])
+def get_investor_name():
+    results = []
+    data = request.get_json()
+    print(data, "get_investor_name")
+    cik = data["investor_cik"]
+    query = "SELECT investor_name FROM all_investors WHERE cik = %s"
+    try:
+        cur.execute(query, (cik,))
+        results = cur.fetchall()
+    except Exception as e:
+        print(e)
+        cur.execute("ROLLBACK")
+        return Response(response=json.dumps({"results": "QUERY FAILED due to {e}"}), status=300)
+
+    if len(results) == 0:
+        return Response(response=json.dumps({"results": "INVESTOR NAME NOT FOUND"}), status=300)
+    
+    return Response(response=json.dumps({"results": results[0][0]}), status=200)
+
 @app.route("/get_filings", methods=["POST"])
 def get_filings():
     results = []

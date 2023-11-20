@@ -56,11 +56,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetIssuerCusipResponseIfNull'
+  /get_investor_name:
+    post:
+      operationId: get_investor_name
+      summary: Get the Investor name for a CIK
+      description: something
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetInvestorNameRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInvestorNameResponse'
+      responses:
+        "300":
+          description: INVESTOR NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInvestorNameResponseIfNull'
   /get_filings:
     post:
       operationId: get_filings
       summary: Query of a database to get records on a Db having 13F documents
-      description: how is the schema, of the table
+      description: run a query in database having 13f documents with the schema \n \ninvestor_cik,\nperiod_of_report timestamp,\n"TITLE OF CLASS",\n"CUSIP",\n"FIGI",\n"VALUE (to the nearest dollar)",\n"SHRS OR PRN AMT",\n"SH/PRN" and table name aggregate_filings
       requestBody:
         content:
           application/json:
@@ -103,6 +128,16 @@ components:
           title: IssuerName
           type: string
           description: The Name of issuer/asset we want to know cusip.
+    GetInvestorNameRequest:
+      title: GetInvestorNameRequest
+      required:
+        - investor_cik
+      type: object
+      properties:
+        investor_cik:
+          title: InvestorCik
+          type: string
+          description: The CIK of investor for knowing the name.
     GetFilingsRequest:
       title: GetFilingsRequest
       required:
@@ -153,6 +188,26 @@ components:
           title: Results
           type: string
           description: If the specified asset/issuer is not found
+    GetInvestorNameResponse:
+      title: GetInvestorNameResponse
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: string
+          description: Name of the investor
+    GetInvestorNameResponseIfNull:
+      title: GetInvestorNameResponseIfNull
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: string
+          description: If the specified CIK is not found
     GetFilingsResponse:
       title: GetFilingsResponse
       required:
