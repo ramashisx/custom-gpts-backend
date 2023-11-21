@@ -28,12 +28,12 @@ def get_investor_cik():
         cur.execute(query, (f".*{investor_name}.*",))
         results = cur.fetchall()
     except psycopg2.ProgrammingError as exc:
-        print(exc.message)
+        print(exc)
         conn.rollback()
     except psycopg2.InterfaceError as exc:
-        print(exc.message)
+        print(exc)
         conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
-        cursor = conn.cursor()
+        cur = conn.cursor()
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CIK NOT FOUND"}), status=300)
@@ -51,12 +51,12 @@ def get_issuer_cusip():
         cur.execute(query, (f".*{issuer_name}.*",))
         results = cur.fetchall()
     except psycopg2.ProgrammingError as exc:
-        print(exc.message)
+        print(exc)
         conn.rollback()
     except psycopg2.InterfaceError as exc:
-        print(exc.message)
+        print(exc)
         conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
-        cursor = conn.cursor()
+        cur = conn.cursor()
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CUSIP NOT FOUND"}), status=300)
@@ -74,12 +74,12 @@ def get_investor_name():
         cur.execute(query, (cik,))
         results = cur.fetchall()
     except psycopg2.ProgrammingError as exc:
-        print(exc.message)
+        print(exc)
         conn.rollback()
     except psycopg2.InterfaceError as exc:
-        print(exc.message)
+        print(exc)
         conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
-        cursor = conn.cursor()
+        cur = conn.cursor()
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "INVESTOR NAME NOT FOUND"}), status=300)
@@ -96,12 +96,12 @@ def get_filings():
         cur.execute(db_query)
         results = cur.fetchall()
     except psycopg2.ProgrammingError as exc:
-        print(exc.message)
+        print(exc)
         conn.rollback()
     except psycopg2.InterfaceError as exc:
-        print(exc.message)
+        print(exc)
         conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
-        cursor = conn.cursor()
+        cur = conn.cursor()
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "NO RESULTS FOUND"}), status=300)
