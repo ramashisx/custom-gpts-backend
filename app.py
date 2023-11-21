@@ -8,34 +8,43 @@ import os
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://chat.openai.com"}})
 
+if ".env" in os.listdir():
+    from dotenv import load_dotenv
+    load_dotenv()
+
 POSTGRES_URL = os.environ.get("POSTGRES_HOST")
 POSTGRES_PORT = os.environ.get("POSTGRES_PORT")
 POSTGRES_DB =  os.environ.get("POSTGRES_DB")
 POSTGRES_USER = os.environ.get("POSTGRES_USER")
 POSTGRES_PW = os.environ.get("POSTGRES_PASSWORD")
 
+global conn, cur
 conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
-global cur 
 cur = conn.cursor()
 
 @app.route("/get_investor_cik", methods=["POST"])
 def get_investor_cik():
+    global conn, cur
     results = []
     data = request.get_json()
     print(data, "get_investor_cik")
-    investor_name = data["investor_name"]
+
+    try:
+        investor_name = data["investor_name"]
+    except Exception as e:
+        return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
+    
     query = "SELECT cik FROM all_investors WHERE investor_name ~ %s"
+    
     try:
         cur.execute(query, (f".*{investor_name}.*",))
         results = cur.fetchall()
-    except psycopg2.ProgrammingError as exc:
-        print(exc)
+    except Exception as e:
+        print(e)
         conn.rollback()
-    except psycopg2.InterfaceError as exc:
-        print(exc)
-        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
-
+        return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
+    
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CIK NOT FOUND"}), status=300)
 
@@ -43,21 +52,26 @@ def get_investor_cik():
 
 @app.route("/get_issuer_cusip", methods=["POST"])
 def get_issuer_cusip():
+    global conn, cur
     results = []
     data = request.get_json()
     print(data, "get_issuer_cusip")
-    issuer_name = data["issuer_name"]
+
+    try:   
+        issuer_name = data["issuer_name"]
+    except Exception as e:
+        return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
+
     query = "SELECT cusip FROM asset_cusip_lookup WHERE nameofissuer ~ %s"
+    
     try:
         cur.execute(query, (f".*{issuer_name}.*",))
         results = cur.fetchall()
-    except psycopg2.ProgrammingError as exc:
-        print(exc)
+    except Exception as e:
+        print(e)
         conn.rollback()
-    except psycopg2.InterfaceError as exc:
-        print(exc)
-        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
+        return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CUSIP NOT FOUND"}), status=300)
@@ -66,21 +80,26 @@ def get_issuer_cusip():
 
 @app.route("/get_investor_name", methods=["POST"])
 def get_investor_name():
+    global conn, cur
     results = []
     data = request.get_json()
     print(data, "get_investor_name")
-    cik = data["investor_cik"]
+
+    try:   
+        cik = data["investor_cik"]
+    except Exception as e:
+        return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
+
     query = "SELECT investor_name FROM all_investors WHERE cik = %s"
+    
     try:
         cur.execute(query, (cik,))
         results = cur.fetchall()
-    except psycopg2.ProgrammingError as exc:
-        print(exc)
+    except Exception as e:
+        print(e)
         conn.rollback()
-    except psycopg2.InterfaceError as exc:
-        print(exc)
-        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
+        return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "INVESTOR NAME NOT FOUND"}), status=300)
@@ -89,21 +108,25 @@ def get_investor_name():
 
 @app.route("/get_filings", methods=["POST"])
 def get_filings():
+    global conn, cur
     results = []
     data = request.get_json()
     print(data, "get_filings")
-    db_query = data["db_query"]
+
+    try:   
+        db_query = data["db_query"]
+    except Exception as e:
+        return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
+    
     try:
         cur.execute(db_query)
         results = cur.fetchall()
-    except psycopg2.ProgrammingError as exc:
-        print(exc)
+    except Exception as e:
+        print(e)
         conn.rollback()
-    except psycopg2.InterfaceError as exc:
-        print(exc)
-        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
-
+        return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
+    
     if len(results) == 0:
         return Response(response=json.dumps({"results": "NO RESULTS FOUND"}), status=300)
     
