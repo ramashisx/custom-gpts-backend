@@ -15,7 +15,7 @@ POSTGRES_USER = os.environ.get("POSTGRES_USER")
 POSTGRES_PW = os.environ.get("POSTGRES_PASSWORD")
 
 conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
-cur = conn.cursor()
+global cur = conn.cursor()
 
 @app.route("/get_investor_cik", methods=["POST"])
 def get_investor_cik():
