@@ -27,10 +27,13 @@ def get_investor_cik():
     try:
         cur.execute(query, (f".*{investor_name}.*",))
         results = cur.fetchall()
-    except Exception as e:
-        print(e)
-        cur.execute("ROLLBACK") # ROLLBACK TO PREVIOUS TRANSACTION
-        return Response(response=json.dumps({"results": "QUERY FAILED due to {e}"}), status=300)
+    except psycopg2.ProgrammingError as exc:
+        print(exc.message)
+        conn.rollback()
+    except psycopg2.InterfaceError as exc:
+        print(exc.message)
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
+        cursor = conn.cursor()
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CIK NOT FOUND"}), status=300)
@@ -47,10 +50,13 @@ def get_issuer_cusip():
     try:
         cur.execute(query, (f".*{issuer_name}.*",))
         results = cur.fetchall()
-    except Exception as e:
-        print(e)
-        cur.execute("ROLLBACK")
-        return Response(response=json.dumps({"results": "QUERY FAILED due to {e}"}), status=300)
+    except psycopg2.ProgrammingError as exc:
+        print(exc.message)
+        conn.rollback()
+    except psycopg2.InterfaceError as exc:
+        print(exc.message)
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
+        cursor = conn.cursor()
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CUSIP NOT FOUND"}), status=300)
@@ -67,10 +73,13 @@ def get_investor_name():
     try:
         cur.execute(query, (cik,))
         results = cur.fetchall()
-    except Exception as e:
-        print(e)
-        cur.execute("ROLLBACK")
-        return Response(response=json.dumps({"results": "QUERY FAILED due to {e}"}), status=300)
+    except psycopg2.ProgrammingError as exc:
+        print(exc.message)
+        conn.rollback()
+    except psycopg2.InterfaceError as exc:
+        print(exc.message)
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
+        cursor = conn.cursor()
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "INVESTOR NAME NOT FOUND"}), status=300)
@@ -86,10 +95,13 @@ def get_filings():
     try:
         cur.execute(db_query)
         results = cur.fetchall()
-    except Exception as e:
-        print(e)
-        cur.execute("ROLLBACK")
-        return Response(response=json.dumps({"results": "QUERY FAILED due to {e}"}), status=300)
+    except psycopg2.ProgrammingError as exc:
+        print(exc.message)
+        conn.rollback()
+    except psycopg2.InterfaceError as exc:
+        print(exc.message)
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
+        cursor = conn.cursor()
 
     if len(results) == 0:
         return Response(response=json.dumps({"results": "NO RESULTS FOUND"}), status=300)
