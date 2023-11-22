@@ -9,7 +9,7 @@ paths:
   /get_investor_cik:
     post:
       operationId: get_investor_cik
-      summary: Get the CIK of a Investor from it's name
+      summary: Get an array of Investor name in database and it's CIK from it's regular name
       description: Something
       requestBody:
         content:
@@ -156,8 +156,22 @@ components:
       properties:
         results:
           title: Results
-          type: string
-          description: CIK of the investor
+          type: object
+          description: Object containing investor information
+          properties:
+            investor_name:
+              title: Investor Name
+              type: array
+              description: Array of investor names
+              items:
+                type: string
+            cik:
+              title: CIK
+              type: array
+              description: Array of CIK (Central Index Key) numbers
+              items:
+                type: string
+
     GetInvestorCikResponseIfNull:
       title: GetInvestorCikResponseIfNull
       required:

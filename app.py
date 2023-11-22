@@ -4,6 +4,7 @@ from flask_cors import CORS
 import psycopg2
 import pandas as pd
 import os
+from parsers import parse_investor_details
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://chat.openai.com"}})
@@ -22,6 +23,7 @@ global conn, cur
 conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
 cur = conn.cursor()
 
+
 @app.route("/get_investor_cik", methods=["POST"])
 def get_investor_cik():
     global conn, cur
@@ -34,8 +36,8 @@ def get_investor_cik():
     except Exception as e:
         return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
     
-    query = "SELECT cik FROM all_investors WHERE investor_name ~ %s"
-    
+    query = 'SELECT (investor_name, cik) FROM all_investors WHERE investor_name ~ %s'
+
     try:
         cur.execute(query, (f".*{investor_name}.*",))
         results = cur.fetchall()
@@ -47,8 +49,15 @@ def get_investor_cik():
     
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CIK NOT FOUND"}), status=300)
+    
+    results = pd.DataFrame([parse_investor_details(result[0]) for result in results])
+    results.columns = ["investor_name", "cik"]
+    payload = {
+            "investor_name": results["investor_name"].to_list(),
+            "cik": results["cik"].to_list()
+    }
 
-    return Response(response=json.dumps({"results": results[0][0]}), status=200)
+    return Response(response=json.dumps({"results": payload}), status=200)
 
 @app.route("/get_issuer_cusip", methods=["POST"])
 def get_issuer_cusip():
