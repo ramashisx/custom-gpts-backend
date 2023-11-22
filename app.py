@@ -30,7 +30,7 @@ def get_investor_cik():
     print(data, "get_investor_cik")
 
     try:
-        investor_name = data["investor_name"]
+        investor_name = data["investor_name"].lower()
     except Exception as e:
         return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
     
@@ -58,7 +58,7 @@ def get_issuer_cusip():
     print(data, "get_issuer_cusip")
 
     try:   
-        issuer_name = data["issuer_name"]
+        issuer_name = data["issuer_name"].lower()
     except Exception as e:
         return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
 
