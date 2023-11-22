@@ -41,7 +41,7 @@ def get_investor_cik():
         results = cur.fetchall()
     except Exception as e:
         print(e)
-        conn.rollback()
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
         return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
     
@@ -69,7 +69,7 @@ def get_issuer_cusip():
         results = cur.fetchall()
     except Exception as e:
         print(e)
-        conn.rollback()
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
         return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
 
@@ -97,7 +97,7 @@ def get_investor_name():
         results = cur.fetchall()
     except Exception as e:
         print(e)
-        conn.rollback()
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
         return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
 
@@ -123,7 +123,7 @@ def get_filings():
         results = cur.fetchall()
     except Exception as e:
         print(e)
-        conn.rollback()
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
         return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
     
@@ -155,7 +155,7 @@ def openapi_spec():
         return Response(text, mimetype="text/yaml")
 
 def main():
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", ssl_context=('main.crt', 'main.key'))
 
 if __name__ == "__main__":
     main()
