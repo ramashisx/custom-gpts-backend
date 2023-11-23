@@ -143,12 +143,12 @@ def get_filings():
         print(e)
         conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
         cur = conn.cursor()
-        return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
+        return Response(response=json.dumps({"results": f"DATABASE ERROR {e}"}), status=300)
     
     if len(results) == 0:
         return Response(response=json.dumps({"results": "NO RESULTS FOUND"}), status=300)
     
-    csv_string = pd.DataFrame(results).to_csv(index=False, header=None)
+    csv_string = pd.DataFrame(results).to_csv(index=False)
     return Response(response=json.dumps({"results": csv_string}), status=200)
 
 
