@@ -171,7 +171,6 @@ components:
               description: Array of CIK (Central Index Key) numbers
               items:
                 type: string
-
     GetInvestorCikResponseIfNull:
       title: GetInvestorCikResponseIfNull
       required:
@@ -190,8 +189,27 @@ components:
       properties:
         results:
           title: Results
-          type: string
-          description: cusip of the asset/issuer
+          type: object
+          description: Object containing investor information
+          properties:
+            name_of_issuer:
+              title: Issuer/Asset Name
+              type: array
+              description: Array of investor/assets names
+              items:
+                type: string
+            cusip:
+              title: CUSIP
+              type: array
+              description: Array of CUSIPs
+              items:
+                type: string
+            issuer:
+              title: First 6 characters of the cusip
+              type: array
+              description: Array of first 6 characters of the cusip this should be used while searching issuers
+              items:
+                type: string
     GetIssuerCusipResponseIfNull:
       title: GetIssuerCusipResponseIfNull
       required:

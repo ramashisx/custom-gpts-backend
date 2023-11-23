@@ -71,7 +71,7 @@ def get_issuer_cusip():
     except Exception as e:
         return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
 
-    query = "SELECT cusip FROM asset_cusip_lookup WHERE nameofissuer ~ %s"
+    query = "SELECT (nameofissuer, cusip) FROM asset_cusip_lookup WHERE nameofissuer ~ %s"
     
     try:
         cur.execute(query, (f".*{issuer_name}.*",))
@@ -85,7 +85,16 @@ def get_issuer_cusip():
     if len(results) == 0:
         return Response(response=json.dumps({"results": "CUSIP NOT FOUND"}), status=300)
     
-    return Response(response=json.dumps({"results": results[0][0]}), status=200) # SHOWING THE FIRST RESULT ONLY
+    results = pd.DataFrame([parse_investor_details(result[0]) for result in results])
+    results.columns = ["investor_name", "cusip"]
+    results["issuer"] = results["cusip"].apply(lambda x: x[:6])
+    results = results.drop_duplicates(subset='issuer')
+    payload = {
+            "name_of_issuer": results["investor_name"].to_list(),
+            "cusip": results["cusip"].to_list(),
+            "issuer": results["issuer"].to_list()
+    }
+    return Response(response=json.dumps({"results": payload}), status=200) # SHOWING THE FIRST RESULT ONLY
 
 @app.route("/get_investor_name", methods=["POST"])
 def get_investor_name():
