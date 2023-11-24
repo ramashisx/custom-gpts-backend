@@ -24,12 +24,12 @@ conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES
 cur = conn.cursor()
 
 
-@app.route("/get_investor_cik", methods=["POST"])
-def get_investor_cik():
+@app.route("/get_investor_details", methods=["POST"])
+def get_investor_details():
     global conn, cur
     results = []
     data = request.get_json()
-    print(data, "get_investor_cik")
+    print(data, "get_investor_details")
 
     try:
         investor_name = data["investor_name"].lower()
@@ -59,19 +59,19 @@ def get_investor_cik():
 
     return Response(response=json.dumps({"results": payload}), status=200)
 
-@app.route("/get_issuer_cusip", methods=["POST"])
-def get_issuer_cusip():
+@app.route("/get_issuer_details", methods=["POST"])
+def get_issuer_details():
     global conn, cur
     results = []
     data = request.get_json()
-    print(data, "get_issuer_cusip")
+    print(data, "get_issuer_details")
 
     try:   
         issuer_name = data["issuer_name"].lower()
     except Exception as e:
         return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
 
-    query = "SELECT (nameofissuer, cusip) FROM asset_cusip_lookup WHERE nameofissuer ~ %s"
+    query = "SELECT (name_of_issuer, cusip) FROM asset_cusip_lookup WHERE name_of_issuer ~ %s"
     
     try:
         cur.execute(query, (f".*{issuer_name}.*",))
@@ -87,42 +87,13 @@ def get_issuer_cusip():
     
     results = pd.DataFrame([parse_investor_details(result[0]) for result in results])
     results.columns = ["investor_name", "cusip"]
-    results["issuer"] = results["cusip"].apply(lambda x: x[:6])
-    results = results.drop_duplicates(subset='issuer')
+    results["issuer_code"] = results["cusip"].apply(lambda x: x[:6])
     payload = {
             "name_of_issuer": results["investor_name"].to_list(),
             "cusip": results["cusip"].to_list(),
-            "issuer": results["issuer"].to_list()
+            "issuer_code": results["issuer_code"].to_list()
     }
     return Response(response=json.dumps({"results": payload}), status=200) # SHOWING THE FIRST RESULT ONLY
-
-@app.route("/get_investor_name", methods=["POST"])
-def get_investor_name():
-    global conn, cur
-    results = []
-    data = request.get_json()
-    print(data, "get_investor_name")
-
-    try:   
-        cik = data["investor_cik"]
-    except Exception as e:
-        return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
-
-    query = "SELECT investor_name FROM all_investors WHERE cik = %s"
-    
-    try:
-        cur.execute(query, (cik,))
-        results = cur.fetchall()
-    except Exception as e:
-        print(e)
-        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
-        cur = conn.cursor()
-        return Response(response=json.dumps({"results": "DATABASE ERROR CHECK QUERY"}), status=300)
-
-    if len(results) == 0:
-        return Response(response=json.dumps({"results": "INVESTOR NAME NOT FOUND"}), status=300)
-    
-    return Response(response=json.dumps({"results": results[0][0]}), status=200)
 
 @app.route("/get_filings", methods=["POST"])
 def get_filings():
