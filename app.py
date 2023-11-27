@@ -93,7 +93,7 @@ def get_issuer_details():
             "cusip": results["cusip"].to_list(),
             "issuer_code": results["issuer_code"].to_list()
     }
-    return Response(response=json.dumps({"results": payload}), status=200) # SHOWING THE FIRST RESULT ONLY
+    return Response(response=json.dumps({"results": payload}), status=200)
 
 @app.route("/get_filings", methods=["POST"])
 def get_filings():
@@ -119,7 +119,7 @@ def get_filings():
     if len(results) == 0:
         return Response(response=json.dumps({"results": "NO RESULTS FOUND"}), status=300)
     
-    csv_string = pd.DataFrame(results).to_csv(index=False)
+    csv_string = pd.DataFrame(results).to_csv(index=False, header=False)
     return Response(response=json.dumps({"results": csv_string}), status=200)
 
 

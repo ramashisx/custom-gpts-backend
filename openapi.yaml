@@ -15,7 +15,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/GetInvestorCikRequest"
+              $ref: "#/components/schemas/GetInvestorDetailsRequest"
         required: true
       responses:
         "200":
@@ -23,14 +23,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetInvestorCikResponse'
+                $ref: '#/components/schemas/GetInvestorDetailsResponse'
       responses:
         "300":
           description: CIK NOT FOUND
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetInvestorCikResponseIfNull'
+                $ref: '#/components/schemas/GetInvestorDetailsResponseIfNull'
   /get_issuer_details:
     post:
       operationId: get_issuer_details
@@ -40,7 +40,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/GetIssuerCusipRequest"
+              $ref: "#/components/schemas/GetIssuerDetailsRequest"
         required: true
       responses:
         "200":
@@ -48,19 +48,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetIssuerCusipResponse'
+                $ref: '#/components/schemas/GetIssuerDetailsResponse'
       responses:
         "300":
           description: CUSIP NOT FOUND
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetIssuerCusipResponseIfNull'
+                $ref: '#/components/schemas/GetIssuerDetailsResponseIfNull'
   /get_filings:
     post:
       operationId: get_filings
-      summary: RUn query to get records on a Db having 13F documents and table name aggregate_filings
-      description:  schema \n \ninvestor_cik,\nperiod_of_report timestamp,\ninvestor_name,\ntitle_of_class,\ncusip,\nissuer_code,\nvalue_(to_the_nearest_dollar),\nshrs_or_prn_amt
+      summary: RUn query to get records on a Db having 13F documents
+      description:  schema \n \ninvestor_cik,\nperiod_of_report timestamp,\ninvestor_name,\ntitle_of_class,\ncusip,\nissuer_code,\nvalue_in_dollars,\nshrs_or_prn_amt and table name aggregate_filings
       requestBody:
         content:
           application/json:
@@ -205,4 +205,3 @@ components:
           title: Results
           type: string
           description: If the specified query is not found
-          
