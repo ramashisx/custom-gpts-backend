@@ -59,8 +59,8 @@ paths:
   /get_filings:
     post:
       operationId: get_filings
-      summary: RUn query to get records on a Db having 13F documents
-      description:  schema \n \ninvestor_cik,\nperiod_of_report timestamp,\ninvestor_name,\ntitle_of_class,\ncusip,\nissuer_code,\nvalue_in_dollars,\nshrs_or_prn_amt and table name aggregate_filings
+      summary: Run query to get records on a Db having 13F documents
+      description:  schema \n \ninvestor_cik,\nperiod_of_report timestamp,\ninvestor_name,\nname_of_issuer,\ntitle_of_class,\ncusip,\nissuer_code,\nvalue_in_dollars,\nshrs_or_prn_amt and table name aggregate_filings
       requestBody:
         content:
           application/json:
