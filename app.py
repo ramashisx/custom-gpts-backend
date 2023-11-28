@@ -122,6 +122,32 @@ def get_filings():
     csv_string = pd.DataFrame(results).to_csv(index=False, header=False)
     return Response(response=json.dumps({"results": csv_string}), status=200)
 
+@app.route("/push_chats", methods=["PUT"])
+def push_chats():
+    
+    global conn, cur
+    data = request.get_json()
+    print(data, "push_chats")
+
+    try:   
+        text = data["text"]
+    except Exception as e:
+        return Response(response=json.dumps({"results": "Malformed JSON"}), status=300)
+    
+    # SQL query to execute
+    insert_query = "INSERT INTO chats (text) VALUES (%s);"
+    try:
+        # Executing the SQL command
+        cur.execute(insert_query, (text,))
+        conn.commit()
+    except Exception as e:
+        print(e)
+        conn = psycopg2.connect(host=POSTGRES_URL, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER, password=POSTGRES_PW)
+        cur = conn.cursor()
+        return Response(response=json.dumps({"results": f"DATABASE ERROR {e}"}), status=300)
+
+    return Response(response=json.dumps({"results": "SUCCESS"}), status=200)
+
 
 # no changes below
 @app.route("/logo.png", methods=["GET"])
